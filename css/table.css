@@ -1,0 +1,35 @@
+table, th, td {
+    border-bottom: 1px solid black;
+    border-collapse: collapse;
+    vertical-align: center;
+}
+table {
+    width: 50%;
+}
+th, td {
+    text-align: center;
+    height: 50px;
+    padding: 15px;
+}
+th:hover, td:hover {
+    text-decoration: underline;
+}
+tr:hover {
+    background-color: skyblue;
+}
+.overflow {
+    overflow-x: auto;
+}
+
+/* 2 COLUMN LAYOUT */
+.row {
+    display: flex;
+}
+.column {
+    flex: 50%;
+    text-align: unset;
+}
+.left {
+    text-align: left;
+    padding-left: 10%;
+}

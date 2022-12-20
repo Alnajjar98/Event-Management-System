@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<?php
+include_once 'models/Events.php';
+include_once 'models/Countries.php';
+$countries = new Countries();
+$nationalities = $countries->listNationalitiesEn();
+
+if (isset($_POST['event_id'])) {
+    $event_id = trim($_POST['event_id']);
+}
+if (isset($_GET['event_id'])) {
+    $event_id = trim($_GET['event_id']);
+}
+
+if (!empty($_POST['service_list'])) {
+    $event_services = $_POST['service_list'];
+}
+?>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Reservation Details</title>
+        <link rel="stylesheet" href="css/table.css">
+    </head>
+    <body>
+        <?php
+include_once 'Header.php';
+
+if (isset($_POST['submitted'])) {
+    if (!empty($_POST['event_id']) && !empty($_POST['startDate']) && !empty($_POST['endDate'])) {
+        $event = trim($_POST['event_id']);
+        $start = trim($_POST['startDate']);
+        $end = trim($_POST['endDate']);
+
+        $events = new Events();
+        $doubleBooked = $events->checkDoubleBooking($event, $start, $end);
+
+        if ($doubleBooked === true) {
+            echo '<p class="error">This event hall is not available within the specified dates. Please change dates or choose a different event hall.</p>';
+        } else { // Pass all data to checkout page
+            if (!empty($_POST['servicesList']))
+            {
+                $servicesList = $_POST['servicesList'];
+            }
+            if (isset($_POST['firstName'])) {
+                $firstName = trim($_POST['firstName']);
+            }
+            if (isset($_POST['middleName'])) {
+                $middleName = trim($_POST['middleName']);
+            }
+            if (isset($_POST['lastName'])) {
+                $lastName = trim($_POST['lastName']);
+            }
+            if (isset($_POST['nationality'])) {
+                $nationality = trim($_POST['nationality']);
+            }
+            if (isset($_POST['cpr'])) {
+                $cpr = trim($_POST['cpr']);
+            }
+            if (isset($_POST['phone'])) {
+                $phone = trim($_POST['phone']);
+            }
+            if (isset($_POST['address'])) {
+                $address = trim($_POST['address']);
+            }
+
+            ?>
+            <form action="checkout.php" method="POST" id="toCheckout">
+                <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
+                <input type="hidden" name="startDate" value="<?php echo $start; ?>">
+                <input type="hidden" name="endDate" value="<?php echo $end; ?>">
+                <input type="hidden" name="firstName" value="<?php echo $firstName; ?>">
+                <input type="hidden" name="middleName" value="<?php echo $middleName; ?>">
+                <input type="hidden" name="lastName" value="<?php echo $lastName; ?>">
+                <input type="hidden" name="nationality" value="<?php echo $nationality; ?>">
+                <input type="hidden" name="cpr" value="<?php echo $cpr; ?>">
+                <input type="hidden" name="phone" value="<?php echo $phone; ?>">
+                <input type="hidden" name="address" value="<?php echo $address; ?>">
+                <?php
+                if (!empty($servicesList)) {
+                    for ($i = 0; $i < count($servicesList); $i++) {
+                        echo '<input type="hidden" name="servicesList[]" value="' . $servicesList[$i] . '" />';
+                    }
+                }
+                ?>
+            </form>
+            <?php
+        }
+    }
+}
+?>
+    <center>
+        <div id="aboutsidebar" class="overflow">
+            <h1>Reservation Details</h1>
+            <form action="customerinfo.php" method="POST">
+                <fieldset>
+                    <legend>Reservation Dates:</legend>
+                    <div class="row">
+                        <div class="column">
+                            <label for="startDate">Start Date*:</label>
+                            <input type="date" name="startDate" id="startDate" value="<?php echo date('Y-m-d'); ?>" onchange="updateValue(this.value)" id="startDate" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" required>
+                        </div>
+                        <div class="column">
+                            <label for="endDate">End Date*:</label>
+                            <input type="date" name="endDate" id="endDate" value="<?php echo date('Y-m-d'); ?>" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" required>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Customer Info:</legend>
+                    <div class="row">
+                        <div class="column">
+                            <label for="firstName">First Name*:</label>
+                            <input type="text" name="firstName" id="firstName" placeholder="Your first name" required>
+                        </div>
+                        <div class="column">
+                            <label for="middleName">Middle Name*:</label>
+                            <input type="text" name="middleName" id="middleName" placeholder="Your middle name" required>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="column">
+                            <label for="lastName">Last Name*:</label>
+                            <input type="text" name="lastName" id="lastName" placeholder="Your last name" required>
+                        </div>
+                        <div class="column">
+                            <label for="nationality">Nationality*:</label>
+                            <select name="nationality" id="nationality" required>
+                                <option value="">Select Your Nationality</option>
+                            <?php
+if (!empty($nationalities)) {
+    for ($i = 0; $i < count($nationalities); $i++) {
+        echo '<option value="' . $nationalities[$i]->id . '">' . $nationalities[$i]->country_nationality_en . '</option>';
+    }
+} else {
+    echo '<p class="error">There was a problem with nationalities.</p>';
+}
+?>
+                            </select> <!-- END NATIONALITIES -->
+                        </div>
+                    </div>
+                    <br><br>
+                    <div class="row">
+                        <div class="column">
+                            <label for="cpr">CPR Number*:</label>
+                            <input type="text" name="cpr" id="cpr" placeholder="National Identity number" required>
+                        </div>
+                        <div class="column">
+                            <label for="phone">Phone/Mobile Number*:</label>
+                            <input type="tel" name="phone" id="phone" placeholder="Your phone number" required>
+                        </div>
+                    </div>
+                    <br><br>
+                    <div class="row">
+                        <div class="column left">
+                            <label for="address">Billing Address*:</label>
+                            <textarea name="address" id="address" cols="50" rows="1" placeholder="BLD No - Road No - Block No - City, Country" required></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+                <br>
+                <button onclick="location.href='index.php'" type="button">Cancel Reservation</button>
+                &nbsp&nbsp&nbsp&nbsp
+                <button type="submit" value="continue">Proceed with Reservation</button>
+                <input type="hidden" name="submitted" value="1" />
+                <input type="hidden" name="car_id" value="<?php echo $car_id; ?>" required>
+                <?php
+if (!empty($services)) {
+    for ($i = 0; $i < count($services); $i++) {
+        echo '<input type="hidden" name="servicesList[]" value="' . $services[$i] . '" />';
+    }
+}
+?>
+            </form>
+            <br />
+        </div>
+      </center>
+    </body>
+<!-- DATES -->
+<script type="text/javascript">
+    let date = new Date();
+
+    function addMonthsToDate(input, noOfMonths) {
+        input.setMonth(input.getMonth() + noOfMonths);
+        return input.toISOString().substr(0,10);
+    }
+    // Default value today
+    let today = date.toISOString().substr(0,10);
+
+    function updateValue(startDate) {
+        // Default endDate value is start date value
+        today = startDate;
+        let endDate = document.getElementById("endDate").getAttribute('value');
+        if (today > endDate)
+            {
+                document.getElementById("endDate").value = today;
+                document.getElementById("endDate").setAttribute("min", today);
+                // Maximum selectable end date is six months from today
+                document.getElementById("endDate").setAttribute("max", max);
+            }
+        return today;
+    }
+    document.getElementById("startDate").value = today;
+
+    // Minimum selectable start day today
+    document.getElementById("startDate").setAttribute("min", today);
+
+    // Maximum selectable day 6 months from today
+    let max = addMonthsToDate(date, 6);
+    document.getElementById("startDate").setAttribute("max", max);
+
+    let startDate = document.getElementById("startDate").value;
+
+    document.getElementById("endDate").value = today;
+
+    // Minimum selectable end date is start date value
+    document.getElementById("endDate").setAttribute("min", today);
+    // Maximum selectable end date is six months from today
+    document.getElementById("endDate").setAttribute("max", max);
+</script>
+<script type="text/javascript">
+    if (toCheckout)
+    {
+        document.forms["toCheckout"].submit();
+    }
+</script>
+</html>
