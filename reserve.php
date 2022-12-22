@@ -11,7 +11,6 @@ echo '</pre>';
 if (isset($_GET['id'])) {
     $id = trim($_GET['id']);
 }
-print_r($events->location->id);
 $events = $events->initWithId($id);
 $image = $events->getImage();
 $image = '<img src="' . $image . '" width="200px">';
