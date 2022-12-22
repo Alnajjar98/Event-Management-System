@@ -5,11 +5,15 @@ if (!isset($_SESSION["role"]))
 $role = $_SESSION["role"];
  
 ?>
+<link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
-<link rel="stylesheet" type="text/css" href="css/style.css">
+
 
 
 <body>
+    <div id="logo">
+        <img src="images/background_logo.png" alt="" >
+    </div> 
     <div class="layer">
     <?php
     

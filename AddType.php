@@ -36,7 +36,7 @@ include_once 'AdminHeader.php';
     include 'Database.php';
      $db = new Database();
  
-      $q = "INSERT INTO event_type(types) VALUES ('$types')";
+      $q = "INSERT INTO event_types(type) VALUES ('$types')";
     $data= $db->querySQL($q);
     
       echo '<script>window.location = "eventType.php"</script>';

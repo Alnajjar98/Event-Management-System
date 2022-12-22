@@ -29,7 +29,7 @@ if( isset($_POST['submitted']) )
     include 'Database.php';
      $db = new Database();
  
-      $q = "Delete from event_services where id =$id ";
+      $q = "Delete from services where id =$id ";
     $data= $db->querySQL($q);
     
       echo '<script>window.location = "eventServices.php"</script>';

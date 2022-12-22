@@ -18,7 +18,7 @@
         include_once 'Database.php';
 
         $db = new Database();
-        $q = 'SELECT location FROM event_location WHERE id = ' . $id;
+        $q = 'SELECT location FROM event_locations WHERE id = ' . $id;
        
 
         $data = $db->singleFetch($q);
@@ -57,7 +57,7 @@ $idd = $_POST['submitted'];
     $location = $_POST['location'];
     
 
-    $q3 = "Update event_location set location = '$location'  where id = $idd";
+    $q3 = "Update event_locations set location = '$location'  where id = $idd";
     $data3 = $db->querySQL($q3);
     
      echo '<script>window.location = "eventLocation.php"</script>';

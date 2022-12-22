@@ -18,11 +18,11 @@
         include_once 'Database.php';
 
         $db = new Database();
-        $q = 'SELECT services FROM event_services WHERE id = ' . $id;
+        $q = 'SELECT service AND service_price FROM services WHERE id = ' . $id;
+        
+
+        $data = $db->multiFetch($q);
        
-
-        $data = $db->singleFetch($q);
-
 
         ?>
         
@@ -32,10 +32,11 @@
             <form action="EditServices.php" method="post">
                 
 
-                Car Category :
+                Event Service :
                 <input  name="services" type="text" value="<?php echo $data->services ?>" >
                 <br> <br> <br>
-
+                Service Price :
+                <input  name="services" type="text" value="<?php echo $data->services ?>" >
                 <div align="center">
 
                     <input type ="submit" class ="Button SubButton" value ="Change" />
@@ -54,11 +55,15 @@
 if (isset($_POST['submitted'])) {
 
 $idd = $_POST['submitted'];
-    $Accessory = $_POST['services'];
+    $services = $_POST['service'];
+    $services = $_POST['service_price'];
     
 
-    $q3 = "Update event_type set services = '$services '  where id = $idd";
+    $q3 = "Update services set service = '$services '  where id = $idd";
+    $q3 = " Update services set service_price = '$services ' where id = $idd";
+   
     $data3 = $db->querySQL($q3);
+
     
      echo '<script>window.location = "eventServices.php"</script>';
         

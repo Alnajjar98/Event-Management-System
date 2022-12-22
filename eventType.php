@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta charset="UTF-8">
@@ -7,10 +6,15 @@
         
               <style>
 table,th,td {
-    border: 4px solid #1f1f7a;
-     border-collapse: collapse;
-     padding: 8px;
-     border-spacing: 10px;
+    border: 4px solid #ab0d24;
+    border-collapse: collapse;
+    padding: 8px;
+    border-spacing: 10px;
+    width: 1000px;
+    clear: both;
+    margin: 10px 400px;
+    text-align: center;
+    
 }
 
 </style>
@@ -21,10 +25,9 @@ table,th,td {
         include_once 'AdminHeader.php';
         
         
-        $q = "Select * from  event_type;";
+        $q = "Select * from  event_types;";
         $db = new Database();
-        $data = $db->multiFetch($q);
-        
+        $data = $db->multiFetch($q);       
            ?>
          <form>
              <center>    <h3>Add New type </h3><input type="button" class="Button SubButton" value="Add new type" onclick="window.location.href='AddType.php'" /></center>
@@ -58,7 +61,7 @@ table,th,td {
                         <td><a href="EditType.php?id=' .  $data[$i]->id . '">Edit</a></td>
                             <td><a href="DeleteType.php?id=' .  $data[$i]->id . '">Delete</a></td>
                           
-                          <td>' . $data[$i]->types. '</td>';
+                          <td>' . $data[$i]->type. '</td>';
 
                 }
                 $table .= '</table>';

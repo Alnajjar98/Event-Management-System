@@ -7,10 +7,14 @@
         
               <style>
 table,th,td {
-    border: 4px solid #1f1f7a;
-     border-collapse: collapse;
-     padding: 8px;
-     border-spacing: 10px;
+    border: 4px solid #ab0d24;
+    border-collapse: collapse;
+    padding: 8px;
+    border-spacing: 10px;
+    width: 1000px;
+    clear: both;
+    margin: 10px 400px;
+    text-align: center;
 }
 
 </style>
@@ -21,7 +25,7 @@ table,th,td {
         include_once 'AdminHeader.php';
         
         
-        $q = "Select * from  event_services;";
+        $q = "Select * from  services;";
         $db = new Database();
         $data = $db->multiFetch($q);
         
@@ -46,7 +50,8 @@ table,th,td {
                       <td><h4>Edit</h4></td>
                       <td><h4>Delete</h4></td>
                      
-                     <td><h4>Services</h4></td>';
+                     <td><h4>Services</h4></td>
+                     <td><h4>Service Price</h4></td>';
 
                 $bg = '#f2f2f2';
 
@@ -58,7 +63,9 @@ table,th,td {
                         <td><a href="EditServices.php?id=' .  $data[$i]->id . '">Edit</a></td>
                             <td><a href="DeleteService.php?id=' .  $data[$i]->id . '">Delete</a></td>
                           
-                          <td>' . $data[$i]->service. '</td>';
+                          <td>' . $data[$i]->service. '</td>;
+                    
+                          <td>BD '. $data[$i]->service_price. '</td>';
 
                 }
                 $table .= '</table>';

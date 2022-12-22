@@ -3,8 +3,10 @@ session_start();
 if($_SESSION["role"] != 1)
     header("Location: LoginPage.php");
 ?>
+
+<link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
-<link rel="stylesheet" type="text/css" href="css/style.css">
+
 
 <body>
     <div class="layer">

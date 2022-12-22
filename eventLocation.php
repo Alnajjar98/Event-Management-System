@@ -6,10 +6,14 @@
         
               <style>
 table,th,td {
-    border: 4px solid #1f1f7a;
-     border-collapse: collapse;
-     padding: 8px;
-     border-spacing: 10px;
+    border: 4px solid #ab0d24;
+    border-collapse: collapse;
+    padding: 8px;
+    border-spacing: 10px;
+    width: 1000px;
+    clear: both;
+    margin: 10px 400px;
+    text-align: center;
 }
 
 </style>
@@ -20,7 +24,7 @@ table,th,td {
         include_once 'AdminHeader.php';
         
         
-        $q = "Select * from  event_location;";
+        $q = "Select * from  event_locations;";
         $db = new Database();
         $data = $db->multiFetch($q);
         ?>

@@ -18,7 +18,7 @@
         include_once 'Database.php';
 
         $db = new Database();
-        $q = 'SELECT types FROM event_type WHERE id = ' . $id;
+        $q = 'SELECT types FROM event_types WHERE id = ' . $id;
        
 
         $data = $db->singleFetch($q);
@@ -33,7 +33,7 @@
                 
 
                 Event Type :
-                <input  name="model" type="text" value="<?php echo $data->types ?>" >
+                <input  name="type" type="text" value="<?php echo $data->type ?>" >
                 <br> <br> <br>
 
                 <div align="center">
@@ -54,10 +54,10 @@
 if (isset($_POST['submitted'])) {
 
 $idd = $_POST['submitted'];
-    $types = $_POST['types'];
+    $types = $_POST['type'];
     
 
-    $q3 = "Update event_type set types = '$types'  where id = $idd";
+    $q3 = "Update event_types set type = '$types'  where id = $idd";
     $data3 = $db->querySQL($q3);
     
      echo '<script>window.location = "eventType.php"</script>';

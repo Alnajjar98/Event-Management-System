@@ -13,14 +13,15 @@
         <div id="reg">
             <h1>Contact Us</h1>
             <br><br><br>
-            <b><Location Hamad Town, flat : 212, road : 103, block : 10</b><br>
+            <b>Location: Road 4003, Block 840, Isa Town</b><br>
              <br>
              <b>The Kingdom of Bahrain<br></b>
                      <b>  Phone Numbers: <br></b>
-            +973 - 33000112<br>
-            +973 - 33000113<br>
+           +973 1789 7000<br>
+            +973 1789 7009<br>
+            Campus security: +973 1789 7550<br>
             <b> Email : <br></b>
-                    <b>najjar.company@gmail.com<br></b>
+                    <b>bahrain.polytechnic@gmail.com<br></b>
             
             
             

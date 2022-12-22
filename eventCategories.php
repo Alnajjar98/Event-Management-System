@@ -6,10 +6,15 @@
         
               <style>
 table,th,td {
-    border: 4px solid #1f1f7a;
-     border-collapse: collapse;
-     padding: 8px;
-     border-spacing: 10px;
+    border: 4px solid #ab0d24;
+    border-collapse: collapse;
+    padding: 8px;
+    border-spacing: 10px;
+    width: 1000px;
+    clear: both;
+    margin: 10px 400px;
+    text-align: center;
+     
 }
 
 </style>

@@ -36,7 +36,7 @@ include_once 'AdminHeader.php';
     include 'Database.php';
      $db = new Database();
  
-      $q = "Insert into event_location(location) value ($location)";
+      $q = "Insert into event_locations(location) value ('$location')";
     $data= $db->querySQL($q);
     
       echo '<script>window.location = "eventLocation.php"</script>';

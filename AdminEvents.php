@@ -72,10 +72,10 @@ $img = '<img src="data:image/jpg;base64,'.base64_encode( $img ).'" width="200px"
                         <td><a href="EditEvent.php?id=' .  $data[$i]->id . '">Edit</a></td>
                             <td><a href="deleteEvent.php?id=' .  $data[$i]->id . '">Delete</a></td>
                           <td>' . $img.'</td>
-                          <td>' . $data[$i]->category. '</td>
-                          <td>' . $data[$i]->location . '</td>
+                          <td>' . $data[$i]->categories. '</td>
+                          <td>' . $data[$i]->locations . '</td>
                           <td>' . $data[$i]->types . '</td>
-                          <td>' . $data[$i]->daily_rental_price . '</td></tr>';
+                          <td>' . $data[$i]->event_cost . '</td></tr>';
 
                 }
                 $table .= '</table>';

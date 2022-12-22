@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Event Management System</title>
-        <link rel="stylesheet" href="css/table.css">
-        <link rel="stylesheet" href="css/pagination.css">
+        
+        <link rel="stylesheet" type="text/css" href="css/pagination.css">
    <?php 
    
    include_once 'Header.php';
@@ -68,7 +68,7 @@ if (!empty($categoriesList)) {
             </select> <!-- END CATEGORIES -->
         </fieldset>
         <fieldset>
-            <label for="tp">event type: </label>
+            <label for="tp">event types: </label>
             <select name="types" id="tp">
                 <option value="0">Any</option>
 <?php
@@ -80,7 +80,7 @@ $typeList = $types->listAll();
 
 if (!empty($typeList)) {
     for ($i = 0; $i < count($typeList); $i++) {
-        echo '<option value="' . $typeList[$i]->id . '">' . $typeList[$i]->types . '</option>';
+        echo '<option value="' . $typeList[$i]->id . '">' . $typeList[$i]->type . '</option>';
     }
 } else {
     echo '<p class="error">There was an error with models.</p>';

@@ -10,7 +10,7 @@ class Types
 {
     
     private $id = 0;
-    private $types = 'unknown type';
+    private $type = 'unknown type';
     private $created_at;
     private $updated_at;
 
@@ -56,18 +56,18 @@ class Types
     }
 
     
-    public function setType($types)
+    public function setType($type)
     {
-        if (is_string($types)) {
-            $this->types = (string) $types;
+        if (is_string($type)) {
+            $this->types = (string) $type;
         }
     }
 
  
-    public function initWith($id, $types, $created_at, $updated_at)
+    public function initWith($id, $type, $created_at, $updated_at)
     {
         $this->id = $id;
-        $this->types = $types;
+        $this->types = $type;
         $this->created_at = $created_at;
         $this->updated_at = $updated_at;
     }

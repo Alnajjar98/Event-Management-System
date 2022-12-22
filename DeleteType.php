@@ -29,7 +29,7 @@ if( isset($_POST['submitted']) )
     include 'Database.php';
      $db = new Database();
  
-      $q = "Delete from  event_type where id =$id ";
+      $q = "Delete from  event_types where id =$id ";
     $data= $db->querySQL($q);
     
       echo '<script>window.location = "eventType.php"</script>';
