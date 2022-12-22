@@ -20,8 +20,8 @@ class Database {
     public function getDBConnection() {
 
         if ($this->dbc == NULL)
-            $this->dbc = mysqli_connect('localhost', 'u201601573', 'u201601573', 'db201601573');
-            //$this->dbc = mysqli_connect('localhost','root','', '');
+            // $this->dbc = mysqli_connect('localhost', 'u201601573', 'u201601573', 'db201601573');
+            $this->dbc = mysqli_connect('localhost','root','', 'db201601573');
 
         if (mysqli_connect_errno()) {
             printf("Connect failed: %s\n", mysqli_connect_error());
@@ -39,7 +39,7 @@ class Database {
     }
 
     function connect() {
-         $this->dblink = mysqli_connect('localhost', 'u201601573', 'u201601573', 'db201601573') or die('CAN NOT CONNECT');
+         $this->dblink = mysqli_connect('localhost', 'root', '', 'db201601573') or die('CAN NOT CONNECT');
     }
 
     function __destruct() {
@@ -56,6 +56,19 @@ class Database {
         if ($sql != null || $sql != '') {
             $sql = $this->mkSafe($sql);
             mysqli_query($this->dblink, $sql);
+            // return error if any
+        }
+    }
+    // advance querySQL
+    function querySQL2($sql) {
+        if ($sql != null || $sql != '') {
+            $sql = $this->mkSafe($sql);
+            $res = mysqli_query($this->dblink, $sql);
+            // return error if any
+            if (!$res) {
+                trigger_error('Error running query: ' . mysqli_error($this->dblink), E_USER_ERROR);
+            }
+            return $res;
         }
     }
 

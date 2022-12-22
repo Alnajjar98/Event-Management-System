@@ -105,5 +105,11 @@ class Location
             return false;
         }
     }
+    public function getinstance($id)
+    {
+        $db = Database::getInstance();
+        $data = $db->singleFetch('SELECT * FROM event_locations WHERE id = ' . $id);
+        return $data;
+    }
 
 }

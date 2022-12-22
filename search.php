@@ -3,6 +3,13 @@
 <?php
 include_once 'Header.php';
 include_once  'models/Events.php';
+$events = new Events();
+// print all post values
+echo '<pre>';
+print_r($_POST);
+print_r($_GET);
+echo '</pre>';
+
 ?>
 
 <html>
@@ -13,34 +20,23 @@ include_once  'models/Events.php';
         <link rel="stylesheet" href="css/pagination.css">
     </head>
     <body>
-        
-    
-        
         <center>
         <div id="aboutsidebar" class="overflow">
             <h1>Search Results</h1>
             <table>
-                <tr>
+                <th>
                     <th>Image</th>
                     <th>Event Type</th>
                     <th>Category</th>
                     <th>Location</th>
-                    <th>Daily Price</th>
+                    <th>Price</th>
                     <th>Book Hall</th>
-                </tr>
+                </th>
                 
                 
                 
                 <tbody>
-                    <?php
-                    
-                    
-                    $events = new Events();
-
-
-                
-                
-
+<?php
 // TODO: add null to values that equals to 0 
 
 $event_location = null;
@@ -98,72 +94,87 @@ if (isset($_GET['s'])) {
 } else {
     $start = 0;
 }
+// echo('start: ' . $start . ' display: ' . $display. ' event_location: ' . $event_location. ' event_type: ' . $event_type. ' event_category: ' . $event_category. ' minPrice: ' . $minPrice. ' maxPrice: ' . $maxPrice);
+// search events using raw query
+$dataRows = $events->searchEventsQueryBuilder($event_location, $event_type,$category, $minPrice, $maxPrice);
 
-$dataRows = $events->searchEventsQueryBuilder(
-    $start, $display, $event_location, $event_type,
-    $event_category, $minPrice, $maxPrice);
-$totRows = $events->searchEventsQueryBuilder(null, null,
-     $event_location, $event_type,
-    $category, $minPrice, $maxPrice);
+$totRows = $events->searchEventsQueryBuilder($event_location, $event_type,$category, $minPrice, $maxPrice);
+// for each row in dataRows
+foreach ($dataRows as $row) {
+    $image = $row->image;
+    $image = '<img src="data:image/jpg;base64,' . base64_encode($image) . '" width="100px"/>';
+    echo('<tr>');
+    echo('<td>' . $image . '</td>');
+    echo('<td>' . $row->type_id . '</td>');
+    echo('<td>' . $row->category_id . '</td>');
+    echo('<td>' . $row->location_id . '</td>');
+    echo('<td>' . $row->event_cost . '</td>');
+    echo('<td><a href="reserve.php?id=' . $row->id . '">Book Now</a></td>');
+    echo('</tr>');
 
-$rowCount = count($totRows);
-
-if (isset($_GET['p'])) {
-    $pages = trim($_GET['p']);
-} else {
-    if ($rowCount > $display) {
-        $pages = (int) ceil($rowCount / $display);
-    } else {
-        $pages = 1;
-    }
 }
 
+
+
+
+    // print_r($dataRows);
+// $rowCount = count($totRows);
+
+// if (isset($_GET['p'])) {
+//     $pages = trim($_GET['p']);
+// } else {
+//     if ($rowCount > $display) {
+//         $pages = (int) ceil($rowCount / $display);
+//     } else {
+//         $pages = 1;
+//     }
+// }
+
                     
                     
                     
-                    
-if (!empty($dataRows)) {
-    if ($display > count($dataRows))
-    {
-        $display = 1;
-    }
-    for ($i = 0; $i < $display; $i++) {
-        $image = $dataRows[$i]->image;
-        $image = '<img src="data:image/jpg;base64,' . base64_encode($image) . '" width="200px"/>';
-        echo '<tr>
-        <td>' . $image . '</td>
-        <td>' . $dataRows[$i]->types . ' </td>
-        <td>' . $dataRows[$i]->category . '</td>
-        <td>' . $dataRows[$i]->location . '</td>
-        <td>' . $dataRows[$i]->daily_rental_price . '</td>
-        <td><a href="reserve.php?id=' . $dataRows[$i]->id . '">Book Now</a></td>
-        </tr>';
-    }
-    if ($pages > 1) {
-        echo '<br /><ul class="pagination">';
-        $currentPage = ($start / $display) + 1;
-        // Create previous button if not on first page
-        if ($currentPage != 1) {
-            echo '<li><a href="search.php?s=' . ($start - $display) .
-                '&p=' . $pages . '">&laquo;</a></li>';
-        }
-        // Create page links except on current page
-        for ($i = 1; $i <= $pages; $i++) {
-            if ($i != $currentPage) {
-                echo '<li><a href="search.php?s=' . ($display * ($i - 1)) .
-                    '&p=' . $pages . '">&nbsp' . $i . '&nbsp</a></li>';
-            }
-        }
-        // Create next button if not on last page
-        if ($currentPage != $pages) {
-            echo '<li><a href="search.php?s=' . ($start + $display) . '&p=' . $pages .
-                '">&raquo;</a></li>';
-        }
-        echo '</ul>';
-    }
-} else {
-    echo '<p class="error">No Event Hall matching your search options found.</p>';
-}
+// if (!empty($dataRows)) {
+//     if ($display > count($dataRows))
+//     {
+//         $display = 1;
+//     }
+//     for ($i = 0; $i < $display; $i++) {
+//         $image = $dataRows[$i]->image;
+//         $image = '<img src="data:image/jpg;base64,' . base64_encode($image) . '" width="200px"/>';
+//         echo '<tr>
+//         <td>' . $image . '</td>
+//         <td>' . $dataRows[$i]->types . ' </td>
+//         <td>' . $dataRows[$i]->category . '</td>
+//         <td>' . $dataRows[$i]->location . '</td>
+//         <td>' . $dataRows[$i]->daily_rental_price . '</td>
+//         <td><a href="reserve.php?id=' . $dataRows[$i]->id . '">Book Now</a></td>
+//         </tr>';
+//     }
+//     if ($pages > 1) {
+//         echo '<br /><ul class="pagination">';
+//         $currentPage = ($start / $display) + 1;
+//         // Create previous button if not on first page
+//         if ($currentPage != 1) {
+//             echo '<li><a href="search.php?s=' . ($start - $display) .
+//                 '&p=' . $pages . '">&laquo;</a></li>';
+//         }
+//         // Create page links except on current page
+//         for ($i = 1; $i <= $pages; $i++) {
+//             if ($i != $currentPage) {
+//                 echo '<li><a href="search.php?s=' . ($display * ($i - 1)) .
+//                     '&p=' . $pages . '">&nbsp' . $i . '&nbsp</a></li>';
+//             }
+//         }
+//         // Create next button if not on last page
+//         if ($currentPage != $pages) {
+//             echo '<li><a href="search.php?s=' . ($start + $display) . '&p=' . $pages .
+//                 '">&raquo;</a></li>';
+//         }
+//         echo '</ul>';
+//     }
+// } else {
+//     echo '<p class="error">No Event Hall matching your search options found.</p>';
+// }
 ?>
                 </tbody>
             </table>

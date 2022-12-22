@@ -3,12 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <title>Event Management System</title>
-        
-        <link rel="stylesheet" type="text/css" href="css/pagination.css">
+        <link rel="stylesheet" href="css/table.css">
+        <link rel="stylesheet" href="css/pagination.css">
    <?php 
    
-   include_once 'Header.php';
-   include_once 'Dropdownfunctions.php';
+    include_once 'Header.php';
+    include_once 'Dropdownfunctions.php';
+    include_once 'models/Events.php';  
+    $events = new events();
+    $minPrice = $events->minPrice();
+    $maxPrice = $events->maxPrice();
     
    ?>
     
@@ -65,10 +69,10 @@ if (!empty($categoriesList)) {
     echo '<p class="error">There was an error with categories.</p>';
 }
 ?>
-            </select> <!-- END CATEGORIES -->
-        </fieldset>
+</select> <!-- END CATEGORIES -->
+    </fieldset> 
         <fieldset>
-            <label for="tp">event types: </label>
+            <label for="tp">event type: </label>
             <select name="types" id="tp">
                 <option value="0">Any</option>
 <?php
@@ -96,8 +100,8 @@ if (!empty($typeList)) {
         </fieldset>
         <fieldset>
             <label for="maxPrice">Max Price:</label>
-            <input type="range" name="maxPrice" id="maxPrice" value="<?php echo $minPrice; ?>" min="<?php echo $minPrice; ?>" max="<?php echo $maxPrice; ?>" oninput="range_max_display.value = maxPrice.value">
-            <output for="maxPrice" id="range_max_display"></output>
+            <input type="range" name="maxPrice" id="maxPrice" value="<?php echo $maxPrice; ?>" min="<?php echo $minPrice; ?>" max="<?php echo $maxPrice; ?>" oninput="range_max_display.value = maxPrice.value">
+            <output for="maxPrice" id="range_max_display"><?php echo $maxPrice; ?></output>
         </fieldset>
         <center>
             <input type ="submit" class ="button SubButton" value ="Search" />
@@ -105,15 +109,7 @@ if (!empty($typeList)) {
         </center>
     </form>
 
- <?php
 
-include_once 'models/Events.php';
-$events = new events();
-$minPrice = $events->minPrice();
-$maxPrice = $events->maxPrice();
-
-
-?>
 </div>
 <!-- END SIDEBAR -->
 </body>

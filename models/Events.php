@@ -1,7 +1,7 @@
 <?php
-if ($_SERVER['DOCUMENT_ROOT'] . '/Database.php')
+if ($_SERVER['DOCUMENT_ROOT'] . '/jafar/Database.php')
 {
-    include_once $_SERVER['DOCUMENT_ROOT'] . '/Database.php';
+    include_once $_SERVER['DOCUMENT_ROOT'] . '/jafar/Database.php';
 } else {
     include_once '../Database.php';
 }
@@ -155,11 +155,16 @@ class Events
             $this->end_date = (string) $end_date;
         }
     }
+    public function getLocationName()
+    {
+        $location = new Location();
+        $location->getinstance($this->location_id);
+        return $location->location;
+    }
 
    
-    public function initWith($id, $location_id, $type_id,
-         $category_id, $event_cost, $image,
-        $created_at, $updated_at) {
+    public function initWith($id, $location_id, $type_id,$category_id, $event_cost, $image,$start_date,$end_date,$created_at, $updated_at)
+    {
         $this->id = $id;
         $this->location_id = $location_id;
         $this->type_id = $type_id;
@@ -179,7 +184,7 @@ class Events
         $data = $db->singleFetch('SELECT * FROM events WHERE id = ' . $id);
         $this->initWith($data->id, $data->location_id,
             $data->type_id, $data->category_id, $data->event_cost,
-            $data->image,$date->start_date,$date->end_date, $data->created_at, $data->updated_at);
+            $data->image,$data->start_date,$data->end_date, $data->created_at, $data->updated_at);
     }
 
 
@@ -207,41 +212,30 @@ class Events
     }
 
     
-    public function searchEventsQueryBuilder($start = null, $display = null, $location = null,
-        $types = null, $category = null, $minPrice = null, $maxPrice = null, ) {
+    public function searchEventsQueryBuilder($location = null, $types = null, $category = null, $minPrice = null, $maxPrice = null ) {
         try {
-
-           "SELECT events.id, event_locations.location, event_types.type,
-                   event_categories.category, events.event_cost
-                   FROM events, event_locations, event_types, event_categories
-                   WHERE events.location_id = event_locations.id 
-                   AND events.type_id = event_types.id 
-                   AND events.category_id = event_categories.id
-                   AND events.end_date > NOW()"
-                   ;
-
+            $db = Database::getInstance();
+            $sql = 'SELECT * FROM events where 1=1 ';
+            
             if (!empty($location)) {
-                $sql .= " AND event_location.id = '$location'";
+                $sql .= " AND location_id = '$location'";
             }
 
             if (!empty($types)) {
-                $sql .= " AND event_type.id = '$types'";
+                $sql .= " AND type_id = '$types'";
             }
             
             if (!empty($category)) {
-                $sql .= " AND event_categories.id = '$category'";
+                $sql .= " AND category_id = '$category'";
             }
 
             if (!empty($minPrice) && !empty($maxPrice)) {
-                $sql .= " AND events.event_cost BETWEEN " . $minPrice . " AND " . $maxPrice . "";
+                $sql .= " and events.event_cost BETWEEN " . $minPrice . " AND " . $maxPrice . "";
             }
 
-            
-
-            if (!empty($start) && !empty($display)) {
-                $sql .= " LIMIT $start, $display";
-            }
-
+            // // if (!empty($start) && !empty($display)) {
+            // //     $sql .= " LIMIT $start, $display";
+            // // }
             $data = $db->multiFetch($sql);
             return $data;
 
@@ -284,14 +278,7 @@ class Events
     {
         if ($id) {
             $db = Database::getInstance();
-            $data = $db->singleFetch('SELECT events.id, events.image, events.event_cost,
-                event_location.location, event_type.type, event_categories.category  FROM events, 
-                event_location, event_type, event_categories
-                WHERE events.id = ' . $id . '
-                AND events.location_id = event_location.id
-                AND events.type_id = event_type.id
-                AND events.category_id = event_categories.id
-                GROUP BY events.id');
+            $data = $db->singleFetch('SELECT * FROM events WHERE id = ' . $id);
             return $data;
         } else {
             echo "No event id provided or event doesn't exist.";
