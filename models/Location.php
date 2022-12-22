@@ -5,9 +5,13 @@ if ($_SERVER['DOCUMENT_ROOT'] . '/Database.php')
 } else {
     include_once '../Database.php';
 }
-
-class Location
+include_once 'BaseModel.php';
+class Location extends BaseModel
 {
+    protected $table = 'event_locations';
+    protected $relationships = array(
+        'events' => array(self::HAS_MANY, 'Events', 'location_id'),
+    );
 
    
     private $id = 0;

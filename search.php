@@ -24,14 +24,14 @@ echo '</pre>';
         <div id="aboutsidebar" class="overflow">
             <h1>Search Results</h1>
             <table>
-                <th>
+                <thred>
                     <th>Image</th>
                     <th>Event Type</th>
                     <th>Category</th>
                     <th>Location</th>
                     <th>Price</th>
                     <th>Book Hall</th>
-                </th>
+                </thread>
                 
                 
                 
@@ -102,12 +102,11 @@ $totRows = $events->searchEventsQueryBuilder($event_location, $event_type,$categ
 // for each row in dataRows
 foreach ($dataRows as $row) {
     $image = $row->image;
-    $image = '<img src="data:image/jpg;base64,' . base64_encode($image) . '" width="100px"/>';
     echo('<tr>');
-    echo('<td>' . $image . '</td>');
-    echo('<td>' . $row->type_id . '</td>');
-    echo('<td>' . $row->category_id . '</td>');
-    echo('<td>' . $row->location_id . '</td>');
+    echo('<td>' . '<img src="'.$image.'" width="200px">' . '</td>');
+    echo('<td>' . $events->getFieldByForeignKey('event_types',$row->type_id,'type') . '</td>');
+    echo('<td>' . $events->getFieldByForeignKey('event_categories',$row->category_id,'category') . '</td>');
+    echo('<td>' . $events->getFieldByForeignKey('event_locations',$row->location_id,'location') . '</td>');
     echo('<td>' . $row->event_cost . '</td>');
     echo('<td><a href="reserve.php?id=' . $row->id . '">Book Now</a></td>');
     echo('</tr>');

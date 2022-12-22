@@ -5,10 +5,14 @@ if ($_SERVER['DOCUMENT_ROOT'] . '/jafar/Database.php')
 } else {
     include_once '../Database.php';
 }
-
-class Events
+    // include base model
+    include_once 'BaseModel.php';
+class Events Extends BaseModel
 {
-
+    protected $table = 'events';
+    protected $relationships = array(
+        'location' => array(self::BELONGS_TO, 'Location', 'location_id'),
+    );
     
     private $id = 0;
     private $location_id = 0;
@@ -23,7 +27,7 @@ class Events
     
 
     
-    public function _construct()
+    public function __construct()
     {
         $this->id = null;
         $this->location_id = null;
@@ -36,7 +40,7 @@ class Events
         $this->created_at = null;
         $this->updated_at = null;
     }
-
+    
     
     public function getId()
     {
@@ -131,6 +135,22 @@ class Events
             $this->event_cost = (float) $event_cost;
         }
     }
+    // set created at and updated at
+    public function setCreatedAt($created_at)
+    {
+        if (is_string($created_at))
+        {
+            $this->created_at = (string) $created_at;
+        }
+    }
+    // set created at and updated at
+    public function setUpdatedAt($updated_at)
+    {
+        if (is_string($updated_at))
+        {
+            $this->updated_at = (string) $updated_at;
+        }
+    }
 
    
     public function setImage($image)
@@ -157,9 +177,7 @@ class Events
     }
     public function getLocationName()
     {
-        $location = new Location();
-        $location->getinstance($this->location_id);
-        return $location->location;
+        return $this->location_id;
     }
 
    
@@ -185,6 +203,7 @@ class Events
         $this->initWith($data->id, $data->location_id,
             $data->type_id, $data->category_id, $data->event_cost,
             $data->image,$data->start_date,$data->end_date, $data->created_at, $data->updated_at);
+        return $this;
     }
 
 
@@ -273,7 +292,7 @@ class Events
         return '100';
     }
 
-   
+    // get the actual event object from the database by id
     public function getEvent($id)
     {
         if ($id) {
@@ -319,5 +338,18 @@ class Events
         $data = $db->singleFetch($sql);
         return $data;
     }
+    function getFieldByForeignKey($table, $foreign_key, $field)
+{
+    // Query the database to get the specified field from the specified table using the foreign key
+    $sql = "SELECT $field FROM $table WHERE id = $foreign_key";
+    $db = Database::getInstance();
+    $result = $db->querySql2($sql);
+    // Get the field value from the result set
+    $row = $result->fetch_row();
+    $value = $row[0];
+
+    // Return the field value
+    return $value;
+}
 
 }

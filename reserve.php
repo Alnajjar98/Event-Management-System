@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <?php
+// include database.php
+include_once 'Database.php';
 include_once 'models/Events.php';
-$events = new Events();
+$events = new Events;
 echo '<pre>';
 print_r($_POST);
 print_r($_GET);
 echo '</pre>';
-
 if (isset($_GET['id'])) {
     $id = trim($_GET['id']);
 }
-
-$events = $events->getEvent($id);
-
-// echo ($events->getLocationName);
-
-$image = $events->image;
-$image = '<img src="data:image/jpg;base64,' . base64_encode($image) . '" width="200px"/>';
+print_r($events->location->id);
+$events = $events->initWithId($id);
+$image = $events->getImage();
+$image = '<img src="' . $image . '" width="200px">';
 ?>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title><?php echo $events->type_id ?></title>
+        <title><?php echo $events->getId() ?></title>
         <link rel="stylesheet" href="css/table.css">
     </head>
     <body>
@@ -30,7 +28,7 @@ include_once 'Header.php';
 ?>
     <center>
         <div id="aboutsidebar" class="overflow">
-            <h1><?php echo $events->type_id . ' Reservation'; ?></h1>
+            <h1><?php echo $events->getFieldByForeignKey('event_locations',$events->getLocationId(),'location') . ' Reservation'; ?></h1>
             <table>
                 <tr>
                     <th>Image</th>
@@ -41,11 +39,11 @@ include_once 'Header.php';
                 </tr>
                 <tbody>
                     <tr>
-                        <td><?php echo $image; ?></td>
-                        <td><?php echo $events->type_id; ?></td>
-                        <td><?php echo $events->event_type; ?></td>
-                        <td><?php echo $events->category; ?></td>
-                        <td><?php echo $events->daily_rental_price . 'BHD'; ?></td>
+                        <td><?php echo $image ?></td>
+                        <td><?php echo $events->getFieldByForeignKey('event_locations',$events->getLocationId(),'location'); ?></td>
+                        <td><?php echo $events->getFieldByForeignKey('event_types',$events->getTypeId(),'type'); ?></td>
+                        <td><?php echo $events->getFieldByForeignKey('event_categories',$events->getCategoryId(),'category'); ?></td>
+                        <td><?php echo $events->getEventCost() . 'BHD'; ?></td>
                     </tr>
                 </tbody>
             </table>
