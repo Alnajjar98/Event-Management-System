@@ -7,63 +7,123 @@
     <body>
         <?php
 include_once 'Header.php';
+include_once('models/Reservations.php');
+include_once 'Dropdownfunctions.php';
+$drop = new Dropdownfunctions();
 if (isset($_POST['reservationCode'])) {
     $id = trim($_POST['reservationCode']);
 } elseif (isset($_GET['reservationCode']))
 {
     $id = trim($_GET['reservationCode']);
 }
+// print all post values
+echo '<pre>';
+print_r($_POST);
+print_r($_GET);
+echo '</pre>';
+$reservation = new Reservations();
+$object = $reservation->getReservationByCode($id);
 
-include_once 'Dropdownfunctions.php';
-$drop = new Dropdownfunctions();
-
-include_once 'Database.php';
-$db = new Database();
-$q = "SELECT  payment_type_id FROM reservations WHERE id =$id";
-
-$data = $db->singleFetch($q);
-
-$pay = $data->payment_type_id;
-
-$q2 = "SELECT  pay.payment_type, pro.card_provider,c.country_name_en,r.total_rental_cost ,r.first_name, r.middle_name, r.last_name, r.address, r.CPR, r.phone_no, r.card_number, r.card_expiry_date, r.card_security_digits
-from reservations r
-JOIN payment_types pay on pay.id = r.payment_type_id
-left join  card_providers pro on pro.id = r.card_provider_id
-join countries c on c.id = r.country_id
-where r.id = $id";
-
-$data2 = $db->singleFetch($q2);
-
-$q3 = "SELECT  a.id,a.service, ra.reserve_qty from  reservation_services ra join  services a on a.id = ra.service_id where reservation_id =$id";
-
-$data3 = $db->singleFetch($q3);
-
+// get service by reservation id
+if ($object){
+$service = $reservation->getServiceByReservationId($object->getId());
+$event = $reservation->getEventByReservationId($object->getEventId());
+    if (!$event && !$service){
+        // break page if no event or service found
+        echo 'No event or service found';
+        die();
+    }
+}
+if (!$object){
+    echo 'No reservation found';
+        } else {
+            
+            $image = $event->getImage();
+            $image = '<img src="' . $image . '" width="200px">';
+            // print_r($object);
+            echo '<br>';
+            if ($event) {
+                // print_r($event);
+            }
+            echo '<br>';
+            // print_r($service);
+        
+        // calculate number of days
+        $startDate = $object->getStartDate();
+        $endDate = $object->getEndDate();
+        $date1 = new DateTime($startDate);
+        $date2 = new DateTime($endDate);
+        $interval = $date1->diff($date2);
+        $days = $interval->format('%a');
+        $days = $days + 1;
 ?>
 
          <center>
-        <div id="adminalter">
+         <div id="aboutsidebar" class="overflow">
             <form action="editReservation.php" method="post">
                 <h3 style="color: red">Editing Reservation</h3>
-                <b>Customer Information</b> <br> <br>
-                <b>First Name</b> <input type="text" name="firstName" size="20" value="<?php echo $data2->first_name; ?>" /> <br><br>
-                <b>Middle Name</b>  <input type="text" name="middleName" size="20" value="<?php echo $data2->middle_name; ?>" /> <br><br>
-                <b>Last Name</b>  <input type="text" name="lastName" size="20" value="<?php echo $data2->last_name; ?>" /> <br> <br>
-                <b>CPR</b>  <input type="text" name="CPR" size="20" value="<?php echo $data2->CPR; ?>" /> <br> <br>
-                <b>Phone Number</b>  <input type="text" name="phone" size="20" value="<?php echo $data2->phone_no; ?>" /> <br> <br>
-
-                <b>Address</b>  <input type="textbox" name="address" size="20" value="<?php echo $data2->address; ?>" /> <br> <br>
-
-
-                 <b>Event Hall Items</b><br> <br>
-                 Select Services :
-                    <?PHP
-                    $drop->services()
-                    ?>
-                </checkbox>  <br> <br>
-
-
-
-<div align="center">
+                <h1>Reservation Details</h1>
+                <table>
+                    <tr style='float-left'><td><h4>Reservation Code: </h4><td> <input disabled name="reservationCode" size="20" value="<?php echo $object->getReservationCode(); ?>"/>
+                    <tr><td><h4>Event Start Date: </h4><td> <input disabled name="startDate" size="20" value="<?php echo $object->getStartDate(); ?>"/>
+                    <tr><td><h4>Event End Date: </h4><td> <input disabled name="endDate" size="20" value="<?php echo $object->getEndDate(); ?>"/>
+                    <tr><td><h4>Event Total Price: </h4><td> <input disabled name="totalPrice" size="20" value="<?php echo $object->getReservationTotalCost(); ?>"/>
+                </table>
+                <h1>Price Breakdown Details</h1>
+                <table>
+                <tr>
+                    <th>Image</th>
+                    <th>Event Location</th>
+                    <th>Event Type</th>
+                    <th>Category</th>
+                    <th>Daily Rental Price</th>
+                    <th>Number Of Days rented</th>
+                    <th>Price * Days</th>
+                </tr>
+                <tbody>
+                    <tr>
+                        <td><?php echo $image ?></td>
+                        <td><?php echo $event->getFieldByForeignKey('event_locations',$event->getLocationId(),'location'); ?></td>
+                        <td><?php echo $event->getFieldByForeignKey('event_types',$event->getTypeId(),'type'); ?></td>
+                        <td><?php echo $event->getFieldByForeignKey('event_categories',$event->getCategoryId(),'category'); ?></td>
+                        <td><?php echo $event->getEventCost() . 'BHD'; ?></td>
+                        <td><?php echo $days; ?> Days</td>
+                        <td><?php echo $event->getEventCost() * $days . 'BHD'; ?></td>
+                    </tr>
+                </tbody>
+                </table>
+                <h1>Service Details</h1>
+                <table>
+                <tr>
+                    <th>Service Name</th>
+                    <th>Service Price</th>
+                    <th>Service Days</th>
+                    <th>Service Total Price</th>
+                    <th>Remove Service</th>
+                </tr>
+                <!-- services with checkbox to delete -->
+                <?php
+                $totalServiceCost = 0;
+                foreach ($service as $s) {
+                    $totalServiceCost += $s->service_price;
+                    echo '<tr>';
+                    echo '<td>' . $s->service . '</td>';
+                    echo '<td>' . $s->service_price . 'BHD</td>';
+                    echo '<td>' . $days . ' Days</td>';
+                    echo '<td>' . $s->service_price * $days . 'BHD</td>';
+                    echo '<td> Delete ?<input type="checkbox" name="service[]" value="' . $s->id . '"></td>';
+                    echo '</tr>';
+                }
+                echo '<tr>';
+                echo '<td></td>';
+                echo '<td></td>';
+                echo '<td>Total</td>';
+                echo '<td>' . $totalServiceCost * $days . 'BHD</td>';
+                echo '<td></td>';
+                echo '</tr>';
+                ?>
+                </table>
+                    <div align="center">
 
                     <input type ="submit" class ="Button SubButton" value ="Change" />
 
@@ -73,21 +133,19 @@ $data3 = $db->singleFetch($q3);
             </form>
         </div>
     </center>
-
-
 </body>
 </html>
 <?php
-if (isset($_POST['submitted'])) {
-    $reservationId = trim($_POST['submitted']);
-    $fname = trim($_POST['firstName']);
-    $mname = trim($_POST['middleName']);
-    $lname = trim($_POST['lastName']);
-    $CPR = trim($_POST['CPR']);
-    $phone = trim($_POST['phone']);
-    $address = trim($_POST['address']);
+            if (isset($_POST['submitted'])) {
+                $reservationId = trim($_POST['submitted']);
+                $fname = trim($_POST['firstName']);
+                $mname = trim($_POST['middleName']);
+                $lname = trim($_POST['lastName']);
+                $CPR = trim($_POST['CPR']);
+                $phone = trim($_POST['phone']);
+                $address = trim($_POST['address']);
 
-    $q4 = "UPDATE reservations 
+                $q4 = "UPDATE reservations 
     SET first_name ='$fname', 
     middle_name ='$mname',
     last_name ='$lname',
@@ -96,9 +154,9 @@ if (isset($_POST['submitted'])) {
     phone_no = '$phone',
     total_rental_cost = total_rental_cost + (total_rental_cost * 0.1) 
     WHERE id = $reservationId ";
-    $data4 = $db->querySql($q4);
+                $data4 = $db->querySql($q4);
 
-    echo '<script>window.location = "index.php"</script>';
-
+                echo '<script>window.location = "index.php"</script>';
+            }
 }
 ?>

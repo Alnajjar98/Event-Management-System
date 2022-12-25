@@ -1,7 +1,7 @@
 <?php
-if ($_SERVER['DOCUMENT_ROOT'] . '/Database.php')
+if ($_SERVER['DOCUMENT_ROOT'] . '/jafar/Database.php')
 {
-    include_once $_SERVER['DOCUMENT_ROOT'] . '/Database.php';
+    include_once $_SERVER['DOCUMENT_ROOT'] . '/jafar/Database.php';
 } else {
     include_once '../Database.php';
 }
@@ -153,47 +153,68 @@ class Services
     public function listAll()
     {
         $db = Database::getInstance();
-        $data = $db->multiFetch('SELECT * FROM event_services');
-        return $data;
-    }
-
-  
-    public function services($services)
-    {
-        $db = Database::getInstance();
-        $sql = 'SELECT id, service, daily_rental_price
-            FROM event_services
-            WHERE id = ' . $services[0];
-
-        if (count($services) >= 1) {
-            for ($i = 1; $i < count($services); $i++) {
-                $sql .= ' OR id = ' . $services[$i];
-            }
-        }
-
-        $sql .= ' GROUP BY id';
+        $sql = 'SELECT * FROM services';
         $data = $db->multiFetch($sql);
         return $data;
     }
 
+    // public function services($services)
+    // {
+    //     $db = Database::getInstance();
+    //     $sql = 'SELECT id, service, daily_rental_price FROM event_services WHERE id = ' . $services[0];
+
+    //     if (count($services) >= 1) {
+    //         for ($i = 1; $i < count($services); $i++) {
+    //             $sql .= ' OR id = ' . $services[$i];
+    //         }
+    //     }
+
+    //     $sql .= ' GROUP BY id';
+    //     $data = $db->multiFetch($sql);
+    //     return $data;
+    // }
+
+    // get all services from id list
+    public function getServicesByIds($ids) {
+        $db = Database::getInstance();
+        $ids = implode(',', $ids);
+        $sql = "SELECT * FROM services WHERE id IN ({$ids})";
+        return $db->multiFetch($sql);
+      }
+
   
-    public function totalRental($id, $startDate, $endDate)
+    // public function totalRental($id, $startDate, $endDate)
+    // {
+    //     $db = Database::getInstance();
+    //     $total_price = 0;
+    //     $sql = "SELECT SUM(event_services.service_price * (DATEDIFF('$endDate', '$startDate')+1)) 'total_cost'
+    //         FROM services
+    //         WHERE services.id = " . $id[0] . "";
+
+    //     if (count($id) > 1)
+    //     {
+    //         for ($i = 1; $i < count($id); $i++)
+    //         {
+    //             $sql .= ' OR event_services.id = '.$id[$i];
+    //         }
+    //     }
+    //     $sql .= " GROUP BY 'total_cost'";
+    //     $data = $db->singleFetch($sql);
+    //     return $data;
+    // }
+    public function totalRental($ids, $startDate, $endDate)
     {
         $db = Database::getInstance();
-        $sql = "SELECT SUM(event_services.daily_rental_price * (DATEDIFF('$endDate', '$startDate')+1)) 'total_cost'
-            FROM event_services
-            WHERE event_services.id = " . $id[0] . "";
-
-        if (count($id) > 1)
-        {
-            for ($i = 1; $i < count($id); $i++)
-            {
-                $sql .= ' OR event_services.id = '.$id[$i];
-            }
-        }
-        $sql .= " GROUP BY 'total_cost'";
-        $data = $db->singleFetch($sql);
-        return $data;
+        $ids = implode(',', $ids);
+        $sql = "SELECT SUM(services.service_price * (DATEDIFF('$endDate', '$startDate')+1)) AS total_cost
+            FROM services
+            WHERE services.id IN ({$ids})";
+        $result = $db->dblink->query($sql);
+        $row = $result->fetch_assoc();
+        $returned = new stdClass();
+        $returned->total_cost = $row['total_cost'];
+        return $returned;
     }
+    
 
 }

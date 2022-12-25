@@ -6,30 +6,12 @@
     <body>
         <?php
         include_once 'Header.php';
-
         if (isset($_POST['submitted'])) {
-            include 'Database.php';
-
+            include_once 'models/Reservations.php';
+            $reservation = new Reservations();
             if (isset($_POST['reservation'])) {
                 $code = trim($_POST['reservation']);
             }
-
-            function findReservation($code) {
-                $db = new Database();
-                $q = "SELECT id FROM reservations WHERE id = $code";
-
-                $data = $db->singleFetch($q);
-                if ($data != null) {
-                    return $data->id;
-                } else {
-                    Echo "Reservation Code: $code does not exist";
-                }
-                return $data;
-            }
-            
-            $foundReservation = findReservation($code);
-            
-            
             ?>
             <form action="ReservationDetails.php" method="post" id="code">
                 <input type="hidden" name="reservationCode" value="<?php echo $code; ?>" />

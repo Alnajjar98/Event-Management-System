@@ -49,7 +49,7 @@ include_once 'Header.php';
             <br />
             <button onclick="location.href='index.php'" type="button">Cancel Reservation</button>
             &nbsp
-            <button onclick="location.href='accessories.php?id=<?php echo $id; ?>'" type="button">Proceed with Reservation</button>
+            <button onclick="location.href='services.php?id=<?php echo $id; ?>'" type="button">Proceed with Reservation</button>
         </div>
       </center>
     </body>

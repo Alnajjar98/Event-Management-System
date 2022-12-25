@@ -1,7 +1,7 @@
 <?php
-if ($_SERVER['DOCUMENT_ROOT'] . '/Database.php')
+if ($_SERVER['DOCUMENT_ROOT'] . '/jafar/Database.php')
 {
-    include_once $_SERVER['DOCUMENT_ROOT'] . '/Database.php';
+    include_once $_SERVER['DOCUMENT_ROOT'] . '/jafar/Database.php';
 } else {
     include_once '../Database.php';
 }
@@ -11,43 +11,22 @@ class Reservations
 
   
     private $id = 0;
-    private $payment_type_id = 0;
-    private $country_id = 0;
-    private $card_provider_id = 0;
+    private $event_id = 0;
+    private $reservation_total_cost = 0.0;
     private $start_date = '';
     private $end_date = '';
-    private $total_rental_cost = 0.0;
-    private $first_name = '';
-    private $middle_name = '';
-    private $last_name = '';
-    private $address = '';
-    private $cpr = 0;
-    private $phone_no = '';
-    private $card_number = '';
-    private $card_expiry_date = '';
-    private $card_security_digits = '';
+    private $reservation_code = '';
     private $created_at;
     private $updated_at;
 
-   
     public function _construct()
     {
         $this->id = null;
-        $this->payment_type_id = null;
-        $this->country_id = null;
-        $this->card_provider_id = null;
+        $this->event_id = null;
+        $this->reservation_total_cost = null;
         $this->start_date = null;
         $this->end_date = null;
-        $this->total_rental_cost = null;
-        $this->first_name = null;
-        $this->middle_name = null;
-        $this->last_name = null;
-        $this->address = null;
-        $this->cpr = null;
-        $this->phone_no = null;
-        $this->card_number = null;
-        $this->card_expiry_date = null;
-        $this->card_security_digits = null;
+        $this->reservation_code = null;
         $this->created_at = null;
         $this->updated_at = null;
     }
@@ -57,29 +36,22 @@ class Reservations
     {
         return $this->id;
     }
-
- 
-    public function getPaymentTypeId()
+    public function getEventId()
     {
-        return $this->payment_type_id;
+        return $this->event_id;
     }
-
-  
-    public function getCountryId()
+    public function getReservationCode()
     {
-        return $this->country_id;
+        return $this->reservation_code;
     }
-
- 
-    public function getCardProviderId()
-    {
-        return $this->card_provider_id;
-    }
-
   
     public function getStartDate()
     {
         return $this->start_date;
+    }
+
+    public function getReservationTotalCost(){
+        return $this->reservation_total_cost;
     }
 
   
@@ -87,67 +59,6 @@ class Reservations
     {
         return $this->end_date;
     }
-
-  
-    public function getTotalRentalCost()
-    {
-        return $this->total_rental_cost;
-    }
-
-  
-    public function getFirstName()
-    {
-        return $this->first_name;
-    }
-
-   
-    public function getMiddleName()
-    {
-        return $this->middle_name;
-    }
-
-  
-    public function getLastName()
-    {
-        return $this->last_name;
-    }
-
- 
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-   
-    public function getCPR()
-    {
-        return $this->cpr;
-    }
-
-   
-    public function getPhoneNo()
-    {
-        return $this->phone_no;
-    }
-
-   
-    public function getCardNumber()
-    {
-        return $this->card_number;
-    }
-
-  
-    public function getCardExpiryDate()
-    {
-        return $this->card_expiry_date;
-    }
-
- 
-    public function getCardSecurityDigits()
-    {
-        return $this->card_security_digits;
-    }
-
   
     public function getCreatedAt()
     {
@@ -167,157 +78,124 @@ class Reservations
             $this->id = (integer) $id;
         }
     }
-
-   
-    public function setPaymentTypeId()
+    public function setEventId($event_id)
     {
-        if (is_integer($payment_type_id)) {
-            $this->payment_type_id = (integer) $payment_type_id;
+        if (is_integer($event_id)) {
+            $this->event_id = (integer) $event_id;
         }
     }
-
-   
-    public function setCountryId()
+    public function setReservationTotalCost($reservation_total_cost)
     {
-        if (is_integer($country_id)) {
-            $this->country_id = (integer) $country_id;
+        if (is_float($reservation_total_cost)) {
+            $this->reservation_total_cost = (float) $reservation_total_cost;
         }
     }
-
-   
-    public function setCardProviderId()
-    {
-        if (is_integer($card_provider_id)) {
-            $this->card_provider_id = (integer) $card_provider_id;
-        }
+    public function setReservationCode()
+    {   
+            // generate a random string of 8 characters
+            $reservation_code = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 8);
+            $this->reservation_code = (string) $reservation_code;
     }
-
- 
-    public function setStartDate()
+    public function createReservation($event_id, $reservation_total_cost, $start_date, $end_date, $reservation_code)
+    {
+      $db = Database::getInstance();
+      $sql = "INSERT INTO reservation (event_id, reservation_total_cost, start_date, end_date, reservation_code, created_at, updated_at) VALUES ('$event_id', '$reservation_total_cost', '$start_date', '$end_date', '$reservation_code', NOW(), NOW())";
+      $result = $db->querySQL2($sql);
+        return $result;
+    }
+    // get reservation by reservation code
+    public function getReservationByCode($reservation_code)
+    {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM reservation WHERE reservation_code = '$reservation_code'";
+        $reservation = $db->singleFetch2($sql);
+        if($reservation){
+            $this->initWith($reservation->id, $reservation->event_id, $reservation->reservation_total_cost, $reservation->start_date, $reservation->end_date, $reservation->reservation_code, $reservation->created_at, $reservation->updated_at);
+            return $this;
+        }
+        return false;
+        
+    }
+    public function getEventByReservationId($id)
+    {
+        $db = Database::getInstance();
+        include_once 'Events.php';
+        $event = new Events();
+        $event = $event->initWithId($id);
+        if ($event)
+        {
+            return $event;
+        }
+        return false;
+    }
+    public function getLastInsertedReservation()
+    {
+    $db = Database::getInstance();
+    $sql = "SELECT * FROM reservation ORDER BY id DESC LIMIT 1";
+        $reservation = $db->singleFetch2($sql);
+            $this->initWith($reservation->id, $reservation->event_id, $reservation->reservation_total_cost, $reservation->start_date, $reservation->end_date, $reservation->reservation_code, $reservation->created_at, $reservation->updated_at);
+    return $this;
+    }
+    // add reservation Services
+    public function addReservationServices($service_id){
+        $db = Database::getInstance();
+        $sql = "INSERT INTO reservation_services (service_id, reservation_id) VALUES ('$service_id', '$this->id')";
+        $result = $db->querySQL2($sql);
+        return $result;
+    }
+    public function setStartDate($start_date)
     {
         $this->start_date = date('Y-m-d', $start_date);
     }
+    
+    public function getServiceByReservationId($id)
+    {
+    $db = Database::getInstance();
+    include_once 'Services.php';
+    $service = new Services();
+    $sql = "SELECT id FROM reservation_services WHERE reservation_id = '$id'";
+    // fetch multiple rows
+    $result = $db->fetchMultipleRows($sql);
+    if ($result)
+    {
+        $ids = array();
+        foreach ($result as $row)
+        {
+        array_push($ids, $row->id);
+        }
+        $ids = implode(',', $ids); // convert the array to a string for the IN clause
+        $sql = "SELECT * FROM services WHERE id IN ($ids)";
+        $result = $db->fetchMultipleRows($sql);
+        if ($result){
+        return $result;
+        }
+    }
+    return false;
+    }
 
    
-    public function setEndDate()
+    public function setEndDate($end_date)
     {
         $this->end_date = date('Y-m-d', $end_date);
     }
-
-   
-    public function setTotalRentalCost()
-    {
-        if (is_numeric($total_rental_cost)) {
-            $this->total_rental_cost = (float) $total_rental_cost;
-        }
-    }
-
-   
-    public function setFirstName()
-    {
-        if (is_string($first_name)) {
-            $this->first_name = (string) $first_name;
-        }
-    }
-
-  
-    public function setMiddleName()
-    {
-        if (is_string($middle_name)) {
-            $this->middle_name = (string) $middle_name;
-        }
-    }
-
-  
-    public function setLastName()
-    {
-        if (is_string($last_name)) {
-            $this->last_name = (string) $last_name;
-        }
-    }
-
- 
-    public function setAddress()
-    {
-        if (is_string($address)) {
-            $this->address = (string) $address;
-        }
-    }
-
-  
-    public function setCPR()
-    {
-        if (is_integer($cpr)) {
-            $this->cpr = (integer) $cpr;
-        }
-    }
-
     
-    public function setPhoneNo()
+    public function initWith($id, $event_id, $reservation_total_cost, $start_date, $end_date, $reservation_code, $created_at, $updated_at)
     {
-        if (is_string($phone_no)) {
-            $this->phone_no = (string) $phone_no;
-        }
-    }
-
-   
-    public function setCardNumber()
-    {
-        if (is_string($card_number)) {
-            $this->card_number = (string) $card_number;
-        }
-    }
-
-    
-    public function setCardExpiryDate()
-    {
-        if (is_string($card_expiry_date)) {
-            $this->card_expiry_date = (string) $card_expiry_date;
-        }
-    }
-
-  
-    public function setCardSecurityDigits()
-    {
-        if (is_string($card_security_digits)) {
-            $this->card_security_digits = (string) $card_security_digits;
-        }
-    }
-
-    
-    public function initWith($id, $payment_type_id, $country_id, $card_provider_id,
-        $start_date, $end_date, $total_rental_cost, $first_name, $middle_name,
-        $last_name, $address, $cpr, $phone_no, $card_number, $card_expiry_date,
-        $card_security_digits, $created_at, $updated_at) {
         $this->id = $id;
-        $this->payment_type_id = $payment_type_id;
-        $this->country_id = $country_id;
-        $this->card_provider_id = $card_provider_id;
+        $this->event_id = $event_id;
+        $this->reservation_total_cost = $reservation_total_cost;
         $this->start_date = $start_date;
         $this->end_date = $end_date;
-        $this->total_rental_cost = $total_rental_cost;
-        $this->first_name = $first_name;
-        $this->middle_name = $middle_name;
-        $this->last_name = $last_name;
-        $this->address = $address;
-        $this->cpr = $cpr;
-        $this->phone_no = $phone_no;
-        $this->card_number = $card_number;
-        $this->card_expiry_date = $card_expiry_date;
-        $this->card_security_digits = $card_security_digits;
+        $this->reservation_code = $reservation_code;
         $this->created_at = $created_at;
         $this->updated_at = $updated_at;
     }
 
-    
     public function initWithId($id)
     {
         $db = Database::getInstance();
         $data = $db->singleFetch('SELECT * FROM reservations WHERE id = ' . $id);
-        $this->initWith($data->id, $data->payment_type_id, $data->country_id, $data->card_provider_id,
-            $data->start_date, $data->end_date, $data->total_rental_cost, $data->first_name, $data->middle_name,
-            $data->last_name, $data->address, $data->cpr, $data->phone_no, $data->card_number, $data->card_expiry_date,
-            $data->card_security_digits, $data->created_at, $data->updated_at);
+        $this->initWith($data->id, $data->event_id, $data->reservation_total_cost, $data->start_date, $data->end_date, $data->reservation_code, $data->created_at, $data->updated_at);
     }
 
    
@@ -327,27 +205,14 @@ class Reservations
         $data = $db->multiFetch('SELECT * FROM reservations GROUP BY id');
         return $data;
     }
+    // save reservation
+    public function save2($event_id, $reservation_total_cost, $start_date, $end_date, $reservation_code)
+    {
+        $db = Database::getInstance();
+        $db->querySQL2('INSERT INTO reservations (event_id, reservation_total_cost, start_date, end_date, reservation_code) VALUES (' . $event_id . ', ' . $reservation_total_cost . ', "' . $start_date . '", "' . $end_date . '", "' . $reservation_code . '")');
+    }
 
-    /**
-     * Save new reservation to database
-     * @param   INT     $events                    Required. Car id.
-     * @param   ARRAY   $services            Required. Array of INT accessory ids.
-     * @param   INT     $paymentType            Required. payment type id.
-     * @param   INT     $country                Required. Country id.
-     * @param   DATE    $startDate              Required. Reservation start date.
-     * @param   DATE    $endDate                Required. Reservation end date.
-     * @param   FLOAT   $totalRentalCost        Required. Total rental cost.
-     * @param   STRING  $firstName              Required. Customer first name.
-     * @param   STRING  $middleName             Required. Customer middle name.
-     * @param   STRING  $lastName               Required. Customer last name.
-     * @param   STRING  $billingAddress         Required. Customer billing address.
-     * @param   INT     $cprNo                  Required. Customer CPR number.
-     * @param   STRING  $phoneNo                Required. Customer phone number.
-     * @param   INT     $cardProvider           Optional. Customer Credit Card Provider. Mandatory for Card payment type.
-     * @param   STRING  $cardNumber             Optional. Customer Credit Card Number. Mandatory for Card payment type.
-     * @param   DATE    $cardExpiry             Optional. Customer Credit Card Expiry Date. Mandatory for Card payment type.
-     * @param   STRING  $cardSecurityDigits     Optional. Customer Credit Card Security Digits. Mandatory for Card payment type.
-     */
+
     public function save($event, $services, $paymentType, $country, $startDate, $endDate, $totalRentalCost,
         $firstName, $middleName, $lastName, $billingAddress, $cprNo, $phoneNo,
         $cardProvider = null, $cardNumber = null, $cardExpiry = null, $cardSecurityDigits = null) {
@@ -400,6 +265,12 @@ class Reservations
         }
         $reservationServicesSql = $mysqli->query($reservationServicesSql);
         return $reservationId;
+    }
+    // insert into reservation_services
+    public function addReservationService($service_id, $reservation_id, $reserve_qty)
+    {
+        $db = Database::getInstance();
+        $db->querySQL2('INSERT INTO reservation_services (service_id, reservation_id, reserve_qty) VALUES (' . $service_id . ', ' . $reservation_id . ', ' . $reserve_qty . ')');
     }
 
     public function reservationDetails($id)

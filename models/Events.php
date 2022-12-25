@@ -200,9 +200,7 @@ class Events Extends BaseModel
     {
         $db = Database::getInstance();
         $data = $db->singleFetch('SELECT * FROM events WHERE id = ' . $id);
-        $this->initWith($data->id, $data->location_id,
-            $data->type_id, $data->category_id, $data->event_cost,
-            $data->image,$data->start_date,$data->end_date, $data->created_at, $data->updated_at);
+        $this->initWith($data->id, $data->location_id, $data->type_id, $data->category_id, $data->event_cost, $data->image,$data->start_date,$data->end_date, $data->created_at, $data->updated_at);
         return $this;
     }
 

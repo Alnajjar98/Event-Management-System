@@ -81,6 +81,19 @@ class Database {
         }
         return $fet;
     }
+    // advance singleFetch
+    function singleFetch2($sql) {
+        $sql = $this->mkSafe($sql);
+        $fet = null;
+        if ($sql != null || $sql != '') {
+            $res = mysqli_query($this->dblink, $sql);
+            $fet = mysqli_fetch_object($res);
+            if (!$res) {
+                trigger_error('Error running query: ' . mysqli_error($this->dblink), E_USER_ERROR);
+            }
+        }
+        return $fet;
+    }
 
     function multiFetch($sql) {
         $sql = $this->mkSafe($sql);
@@ -95,6 +108,35 @@ class Database {
         }
         return $result;
     }
+    function fetchMultipleRows($sql) {
+        $result = [];
+        $res = mysqli_query($this->dblink, $sql);
+        if (!$res) {
+          throw new Exception(mysqli_error($this->dblink));
+        }
+        while ($fet = mysqli_fetch_object($res)) {
+          $result[] = $fet;
+        }
+        return $result;
+      }
+
+    // function multiFetch($sql) {
+    //     $stmt = $this->dblink->prepare($sql);
+    //     if ($stmt === false) {
+    //       throw new Exception("Error preparing statement: " . $this->dblink->error);
+    //     }
+    //     if (!$stmt->execute()) {
+    //       throw new Exception("Error executing statement: " . $stmt->error);
+    //     }
+    //     $result = [];
+    //     $counter = 0;
+    //     while ($row = $stmt->fetch()) {
+    //       $result[$counter] = $row;
+    //       $counter++;
+    //     }
+    //     return $result;
+    //   }
+
 
    function mkSafe($string) {
         /* $string = strip_tags($string);
